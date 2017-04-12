@@ -26,42 +26,52 @@ for i=1:3
         php = 2*pi*fp*rand();
         pl(:,:,n) = mp*sin(2*pi*fp*t + php);
     end
-    p(:,:,i) = pl(:,:,1);
+    a(:,:,i) = pl(:,:,1);
     for n=2:N
-        p(:,:,i) = p(:,:,i) + pl(:,:,n);
+        a(:,:,i) = a(:,:,i) + pl(:,:,n);
     end
+    
+    p(:,:,i) = a(:,:,i);
+    
     %(b)
-    p(:,:,i) = p(:,:,i) + 0.5*randn(size(t)); %add gaussian noise
+    b(:,:,i) = 0.5*randn(size(t));
+    
+%     p(:,:,i) = p(:,:,i) + b(:,:,i); %add gaussian noise
     
     %(c)
     mp = 0.2 * 1.8*rand();
     fp = (0.25 + 1.75*rand())/Tk;
     php = 2*pi*fp*rand();
     c(:,:,i) = + mp*sawtooth(2*pi*fp*t + php);
+    
     p(:,:,i) = p(:,:,i) + c(:,:,i);
     
     %(d)
     for n=1:10
        mp =  0.1 + 0.9*rand();
        fp = (20 + 80*rand())/Tk;
-       d(:,:,i,n) = mp * sin(2*pi*fp*t);
-       p(:,:,i) = p(:,:,i) + d(:,:,i,n);
+       dk(:,:,i,n) = mp * sin(2*pi*fp*t);
+       if n == 1
+           d(:,:,i) = dk(:,:,i,n);
+       else
+           d(:,:,i) = d(:,:,i) + dk(:,:,i,n);
+       end
     end
+     p(:,:,i) = p(:,:,i) + d(:,:,i);
 end
 
 
 
-for n=1:3
+for n=1:10
     
     %fft
-    Y = fft(p(:,:,n));
+    Y = fft(B(:,:,n));
     f = fs * (0:(L/2))/L;
     P2 = abs(Y/L);
     P1 = P2(1:L/2+1);   
     P1(2:end-1) = 2 * P1(2:end-1);
-    
-    %print
+ 
     figure
     plot(f, P1);
-%     plot(t, B(:,:,n))
 end
+
