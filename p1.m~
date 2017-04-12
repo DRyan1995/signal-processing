@@ -1,0 +1,7 @@
+function y=myfun1(x)
+y=x.*(x>=0 & x<1)+2*x.*(x>=1 & x<=2);
+end
+
+>> x=0:0.001:2;
+>> y=myfun1(x);
+>> plot(x,y)
