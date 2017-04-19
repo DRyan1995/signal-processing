@@ -1,8 +1,8 @@
 clear all
 close all
 
-testN = 10;
-testT = 20;
+testN = 2;
+testT = 8;
 
 fs = 256;
 ts = 1/fs;
@@ -99,14 +99,38 @@ for n=1:testN
     
 %     pRMS = rms(B(:,:,n))^2;
 %     disp(pRMS);
+
+    for i = (0:testT-1) * fs 
+        for testTime_fac = 0:2 
+            testTime = 2 ^ testTime_fac;
+            if testTime + i/fs > testT || i == 0
+                continue;
+            end
+            test_index = i:i+testTime*fs;
+            testt = test_index / fs;
+            testL = testTime * fs;
+            %fft
+            Y = fft(B(:,test_index,n));
+            f = fs * (0:(testL/2))/testL;
+            P2 = abs(Y/testL);
+            P1 = P2(1:testL/2+1);   
+            P1(2:end-1) = 2 * P1(2:end-1);
+
+            figure
+            plot(f,P1)
+            title(['fft for startTime=',num2str(i/fs), ' n=', num2str(n), ' testTime=', num2str(testTime)]);
+        end
+    end
+    
     figure
     plot(t, B(:,:,n))
-
+    title(['Signal B',num2str(n)])
+    
 end
 
 for n=1:3
     %fft
-    Y = fft(d(:,:,n));
+    Y = fft(c(:,:,n) + d(:,:,n));
     f = fs * (0:(L/2))/L;
     P2 = abs(Y/L);
     P1 = P2(1:L/2+1);   
@@ -114,5 +138,6 @@ for n=1:3
  
     figure
     plot(f, P1);
+    title(['FFT for P',num2str(n)])
 end
 
